@@ -15,8 +15,9 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.text.TableView.TableRow;
 
 @SuppressWarnings("serial")
 public class RafaTable extends JPanel
@@ -36,6 +37,7 @@ public class RafaTable extends JPanel
 	private JTextField textField_age;
 	private JTextField textField_generation;
 	private JTextField textField_fitness;
+	private JComboBox<Object> combo_simulationStep;
 	private JLabel lblNewLabel;
 	private JLabel lblNewLabel_1;
 	private JLabel lblNewLabel_2;
@@ -61,6 +63,7 @@ public class RafaTable extends JPanel
 		// table.getModel();
 		// model.dataFillerFromArray2D(map);
 		model.array2DtoVector2D(map);
+		model.addTableModelListener(new myTableModelListener());
 		return model;
 	}
 
@@ -111,6 +114,12 @@ public class RafaTable extends JPanel
 		RUN_SIM_Button.setBackground(Color.GREEN);
 		RUN_SIM_Button.addActionListener(new RunSimulationButtonActionListener());
 		panel.add(RUN_SIM_Button);
+
+		combo_simulationStep = new JComboBox<Object>();
+		combo_simulationStep.setModel(new DefaultComboBoxModel<Object>(
+				new String[] { "Step", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }));
+		combo_simulationStep.setMaximumRowCount(12);
+		panel.add(combo_simulationStep);
 
 		panel_1 = new JPanel();
 		panel_1.setBounds(12, 234, 455, 50);
@@ -241,6 +250,9 @@ public class RafaTable extends JPanel
 			if (table.getSelectedRow() > -1)
 			{
 				populateSelectedRowFromCreature(creatureFromTextFields());
+				int row = table.getSelectedRow();
+				model.replace(row, creatureFromTableRow());
+				updateCreatureMapArray2D();
 
 			} else
 				System.out.println("No rows selected");
@@ -252,13 +264,17 @@ public class RafaTable extends JPanel
 	{
 		public void actionPerformed(ActionEvent e)
 		{
-			// simRun.moveCreatures();
-			simRun.moveCreatures();
-			table.setModel(initModel(simRun.mapOfCreatures));
-			model.fireTableDataChanged();
-			table.repaint();
-			updateCreatureMapArray2D();
+			int steps = combo_simulationStep.getSelectedIndex();
+			if (steps < 1)
+				steps = 1;
 
+			for (int i = 0; i < steps; i++)
+			{				
+				simRun.moveCreatures();
+				table.setModel(initModel(simRun.mapOfCreatures));				
+				table.repaint();
+			}
+			updateCreatureMapArray2D();
 			System.out.println("Run button Pressed");
 		}
 	}
@@ -301,4 +317,14 @@ public class RafaTable extends JPanel
 		}
 
 	}
+
+	private class myTableModelListener implements TableModelListener
+	{
+		public void tableChanged(TableModelEvent evt)
+		{
+			int row = table.getSelectedRow();
+			model.replace(row, creatureFromTableRow());
+			updateCreatureMapArray2D();
+		}
+	};
 }

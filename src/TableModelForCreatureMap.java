@@ -6,7 +6,7 @@ import javax.swing.JComboBox;
 import javax.swing.table.AbstractTableModel;
 
 @SuppressWarnings("serial")
-public class TableModelForCreatureMap extends AbstractTableModel implements Serializable 
+public class TableModelForCreatureMap extends AbstractTableModel 
 {
 
 	String[] headers = { "Type", "Age", "Fitness", "Generation", "PosX", "PosY" };
@@ -58,7 +58,7 @@ public class TableModelForCreatureMap extends AbstractTableModel implements Seri
 					}
 					else
 					{
-						System.out.println("Dead Creature");
+						System.out.println("array2DtoVector2D line 61:: Dead Creature");
 					}
 				}
 			}
@@ -73,6 +73,9 @@ public class TableModelForCreatureMap extends AbstractTableModel implements Seri
 	public Creature[][] Vector2DtoCreatureMapArray2D(Vector<Vector<Object>> v)
 	{
 		Creature [][] cMap  = new Creature[10][10];
+		for(int i = 0; i < 10; i++)
+			for(int j = 0; j < 10; j++)
+				cMap[i][j] = new Creature();
 		
 		for (int i = 0; i < v.size(); i++)
 		{
@@ -177,6 +180,11 @@ public class TableModelForCreatureMap extends AbstractTableModel implements Seri
 	{
 		// return arrayData2D.length;
 		return vectorData2D.size();
+	}
+	public void replace(int index, Creature c)
+	{
+		
+		
 	}
 
 	public String getColumnName(int col)
