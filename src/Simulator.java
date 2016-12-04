@@ -7,7 +7,7 @@ public class Simulator
 
 	protected Simulator()
 	{
-		//singleton
+		// singleton
 		initializeSimulator();
 		System.out.println("singleton initialized Simulator");
 	}
@@ -17,7 +17,7 @@ public class Simulator
 		if (instance == null)
 		{
 			instance = new Simulator();
-			
+
 		}
 		System.out.println("singleton reference passesd");
 		return instance;
@@ -46,11 +46,11 @@ public class Simulator
 					else
 						type = "Carnivore";
 					int[] pos = { i, j };
-					mapOfCreatures[i][j] = new Creature(type, 0, 0, 25, pos);
+					mapOfCreatures[i][j] = new Creature(type, 0, 25, 0, pos);
 				} else
 				{
 					int[] pos = { i, j };
-					mapOfCreatures[i][j] = new Creature("none", 0, 0, 0, pos);
+					mapOfCreatures[i][j] = new Creature("none", 0, 25, 0, pos);
 				}
 			}
 	}
@@ -80,35 +80,21 @@ public class Simulator
 	 * 
 	 * @return new map with new positions.
 	 */
-	public Creature[][] moveCreatures()
-	{
-		Creature[][] temp = new Creature[10][10];
-		Creature c1;
-		Creature c2;
+	public void moveCreatures()
+	{		
+		
 		for (int i = 0; i < 10; i++)
 		{
 			for (int j = 0; j < 10; j++)
-			{
-				int[] newPos = newPosition(new int[] { i, j });
-				c1 = mapOfCreatures[i][j];
-				c2 = mapOfCreatures[newPos[0]][newPos[1]];
-				if (c2 != null && c1.moved == false)
-				{
-					// for now do noting
-					/**
-					 * Need to implement: predatory action feeding Breeding
-					 * moving around obstacles
-					 */
-				} else
-				{
-					c2 = c1;
-					c1 = null;
-					c2.moved = true;
-					temp[newPos[0]][newPos[1]] = c2;
+			{				 
+				if (mapOfCreatures[i][j] != null)
+				{	 					
+					mapOfCreatures[i][j].setPosition(newPosition(mapOfCreatures[i][j].getPosition()));					
 				}
 			}
 		}
-		return temp;
+
+		
 	}
 
 	public Creature checkFood(Creature c)
@@ -128,7 +114,7 @@ public class Simulator
 
 	int[] newPosition(int[] dirPar)
 	{
-		int[] temp = dirPar;
+		int[] temp = new int[] { dirPar[0], dirPar[1] };
 		int[] trg = randomDirection();
 		dirPar[0] += trg[0];
 		dirPar[1] += trg[1];
@@ -136,7 +122,9 @@ public class Simulator
 		{
 			return dirPar;
 		} else
-			return newPosition(temp);
+		{
+			return temp;// dont move
+		}
 	}
 
 	int[] randomDirection()

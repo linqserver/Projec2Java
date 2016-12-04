@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -5,9 +6,9 @@ import javax.swing.JComboBox;
 import javax.swing.table.AbstractTableModel;
 
 @SuppressWarnings("serial")
-public class TableModelForCreatureMap extends AbstractTableModel
+public class TableModelForCreatureMap extends AbstractTableModel implements Serializable 
 {
-	
+
 	String[] headers = { "Type", "Age", "Fitness", "Generation", "PosX", "PosY" };
 
 	public Object[][] arrayData2D;// = new Object[100][6];
@@ -28,7 +29,7 @@ public class TableModelForCreatureMap extends AbstractTableModel
 			{
 				if (((Creature) arrayData2D[i][j]).getType() != null)
 				{
-					String type = ((Creature) arrayData2D[i][j]).getType();
+					String type = ((Creature) arrayData2D[i][j]).getType().toString();
 					int age = ((Creature) arrayData2D[i][j]).getAge();
 					int fitness = ((Creature) arrayData2D[i][j]).getFitness();
 					int generation = ((Creature) arrayData2D[i][j]).getGeneration();
@@ -49,7 +50,7 @@ public class TableModelForCreatureMap extends AbstractTableModel
 		{
 			for (int j = 0; j < 10; j++)
 			{
-				if (map[i][j].getType() != null)
+				if (!(map[i][j]== null))
 				{
 					if (map[i][j].getType().equals("Herbivore") || map[i][j].getType().equals("Carnivore"))
 					{
@@ -59,15 +60,36 @@ public class TableModelForCreatureMap extends AbstractTableModel
 			}
 		}
 	}
+	/**
+	 * This function is necessary to translate information between simulator class
+	 * and  table model. It changes table model into creature array[10][10] used for 
+	 * simulation
+	 * @param v vector of object vectors. 
+	 */
+	public Creature[][] Vector2DtoCreatureMapArray2D(Vector<Vector<Object>> v)
+	{
+		Creature [][] cMap  = new Creature[10][10];
+		
+		for (int i = 0; i < v.size(); i++)
+		{
+			Creature c = vectorToCreature(v.elementAt(i));			
+			cMap[c.getPositionX()][c.getPositionY()] = c;			
+		}			
+				
+			return cMap;
+	}
+
 	public void deleteRow(int index)
 	{
-		if(index < vectorData2D.size())
-		vectorData2D.remove(index);
+		if (index < vectorData2D.size())
+			vectorData2D.remove(index);
 	}
-	/** 
-	 * @param c Creature
+
+	/**
+	 * @param c
+	 *            Creature
 	 */
-	public void addRow(Creature c)	
+	public void addRow(Creature c)
 	{
 		Vector<Object> vectorOfcreatureAtributes = new Vector<Object>();
 		vectorOfcreatureAtributes.add(c.getType());
@@ -78,6 +100,19 @@ public class TableModelForCreatureMap extends AbstractTableModel
 		vectorOfcreatureAtributes.add(c.getPositionY());
 		vectorData2D.add(vectorOfcreatureAtributes);
 	}
+	public Creature vectorToCreature(Vector<Object> v)
+	{
+		Creature c = new Creature();
+		
+		c.setType((String) v.elementAt(0));
+		c.setAge((int) v.elementAt(1));
+		c.setFitness((int) v.elementAt(2));
+		c.setGeneration((int) v.elementAt(3));
+		c.setPositionX((int) v.elementAt(4));
+		c.setPositionY((int) v.elementAt(5));
+		return c;
+		
+	}
 
 	public void dataFillerFromArray2D(Creature[][] map)
 	{
@@ -87,7 +122,7 @@ public class TableModelForCreatureMap extends AbstractTableModel
 		for (int i = 0; i < 10; i++)
 			for (int j = 0; j < 10; j++)
 			{
-				if (map[i][j].getType() != null)
+				if (!(map[i][j].getType().equals("")))
 				{
 					if (map[i][j].getType().equals("Herbivore") || map[i][j].getType().equals("Carnivore"))
 					{

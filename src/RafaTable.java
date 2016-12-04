@@ -45,7 +45,7 @@ public class RafaTable extends JPanel
 	private JLabel lblNewLabel_3;
 	private JLabel lblNewLabel_4;
 	private JLabel lblCreatureSimulator;
-
+	private Simulator simRun;// = Simulator.getInstance();	
 	private TableModelForCreatureMap model;
 	/**
 	 * Create the panel.
@@ -66,7 +66,7 @@ public class RafaTable extends JPanel
 
 	private void initialize(Creature[][] map)
 	{
-
+		simRun = Simulator.getInstance();
 		setLayout(null);
 		scrollPane = new JScrollPane();
 		scrollPane.setBounds(12, 13, 450, 209);
@@ -192,10 +192,14 @@ public class RafaTable extends JPanel
 	private class RunSimulationButtonActionListener implements ActionListener
 	{
 		public void actionPerformed(ActionEvent e)
-		{
-
+		{					
+			//simRun.moveCreatures();		
+			simRun.moveCreatures();
+			table.setModel(initModel(simRun.mapOfCreatures));
+			model.fireTableDataChanged();
+			table.repaint();
+			
 			System.out.println("Run button Pressed");
-
 		}
 	}
 
@@ -218,7 +222,7 @@ public class RafaTable extends JPanel
 		{
 			scrollPane.getVerticalScrollBar().setValue(0);
 			model.deleteRow(table.getSelectedRow());
-			model.fireTableDataChanged();
+			//model.fireTableDataChanged();
 			
 			scrollPane.repaint();
 			table.repaint();

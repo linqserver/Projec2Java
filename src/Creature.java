@@ -29,11 +29,11 @@ public class Creature
 			setPosition(pPosition);
 			moved = false;
 		} catch (Exception e) {
-			setType(null);
-			setAge((Integer) null);
-			setFitness((Integer) null);
-			setGeneration((Integer) null);
-			setPosition(null);
+			setType("none");
+			setAge((Integer) 0);
+			setFitness((Integer) 0);
+			setGeneration((Integer) 0);
+			setPosition(new int[]{0,0});
 			moved = false;
 		}
 	}
@@ -45,7 +45,7 @@ public class Creature
 	/**
 	 * @return the type
 	 */
-	public String getType()
+	public Object getType()
 	{
 		return type;
 	}
@@ -96,7 +96,7 @@ public class Creature
 	 */
 	public void setType(String type)
 	{
-		if (type.equals("Herbivore") || type.equals("Carnivore"))
+		if (type.equals("Herbivore") || type.equals("Carnivore")|| type.equals("none"))
 			this.type = type;
 		else
 			System.out.println("Incorrect type of creature, type is: " + type);
@@ -161,6 +161,11 @@ public class Creature
 	public void setPositionY(int y)
 	{
 		this.position[1] = y;
+	}
+	public void printCreature()
+	{
+		System.out.printf("Type: %s | Age: %d | Fitness: %d | Gen: %d | PosX: %d | PosY: %d\n ",
+							type,age,fitness,generation,position[0],position[1] );
 	}
 	
 }
