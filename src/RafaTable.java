@@ -64,6 +64,7 @@ public class RafaTable extends JPanel
 		// model.dataFillerFromArray2D(map);
 		model.array2DtoVector2D(map);
 		model.addTableModelListener(new myTableModelListener());
+		model.initModelSimulatorReference();
 		return model;
 	}
 
@@ -253,6 +254,7 @@ public class RafaTable extends JPanel
 				int row = table.getSelectedRow();
 				model.replace(row, creatureFromTableRow());
 				updateCreatureMapArray2D();
+				model.transferDataToSimulator();
 
 			} else
 				System.out.println("No rows selected");
@@ -272,10 +274,13 @@ public class RafaTable extends JPanel
 			{				
 				simRun.moveCreatures();
 				table.setModel(initModel(simRun.mapOfCreatures));				
-				table.repaint();
+				
 			}
+			table.repaint();
+			
 			updateCreatureMapArray2D();
 			System.out.println("Run button Pressed");
+			model.transferDataToSimulator();
 		}
 	}
 
@@ -284,12 +289,12 @@ public class RafaTable extends JPanel
 		@SuppressWarnings("unused")
 		public void actionPerformed(ActionEvent e)
 		{
-			model.addRow(new Creature());
-			model.fireTableDataChanged();
+			model.addRow(new Creature());			
 			scrollPane.getVerticalScrollBar().setValue(0);
 			scrollPane.repaint();
 			table.repaint();
 			updateCreatureMapArray2D();
+			model.transferDataToSimulator();
 		}
 	}
 
@@ -305,6 +310,7 @@ public class RafaTable extends JPanel
 			scrollPane.repaint();
 			table.repaint();
 			updateCreatureMapArray2D();
+			model.transferDataToSimulator();
 
 		}
 	}
@@ -314,6 +320,7 @@ public class RafaTable extends JPanel
 		public void valueChanged(ListSelectionEvent event)
 		{
 			populateTextFieldsFromSelectedRow();
+			model.transferDataToSimulator();
 		}
 
 	}
@@ -325,6 +332,7 @@ public class RafaTable extends JPanel
 			int row = table.getSelectedRow();
 			model.replace(row, creatureFromTableRow());
 			updateCreatureMapArray2D();
+			model.transferDataToSimulator();
 		}
 	};
 }

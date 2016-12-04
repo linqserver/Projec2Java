@@ -1,15 +1,20 @@
+import java.util.Vector;
+
 public class Simulator
 {
 	public Creature[][] mapOfCreatures;
 	public String[][] food;
-
+	public Vector<Vector<Object>>  vectorDataBackup;
+	public Vector<Vector<Object>>  vectorDataInputFile;
+	public boolean newRead;
 	private static Simulator instance = null;
 
 	protected Simulator()
 	{
 		// singleton
 		initializeSimulator();
-		System.out.println("singleton initialized Simulator");
+		newRead = false;
+		System.out.println("Simulator singleton initialized Simulator");
 	}
 
 	public static Simulator getInstance()
@@ -17,9 +22,8 @@ public class Simulator
 		if (instance == null)
 		{
 			instance = new Simulator();
-
 		}
-		System.out.println("singleton reference passesd");
+		System.out.println("Simulator singleton reference passesd");
 		return instance;
 	}
 

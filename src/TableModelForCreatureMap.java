@@ -6,7 +6,7 @@ import javax.swing.JComboBox;
 import javax.swing.table.AbstractTableModel;
 
 @SuppressWarnings("serial")
-public class TableModelForCreatureMap extends AbstractTableModel 
+public class TableModelForCreatureMap extends AbstractTableModel
 {
 
 	String[] headers = { "Type", "Age", "Fitness", "Generation", "PosX", "PosY" };
@@ -14,7 +14,7 @@ public class TableModelForCreatureMap extends AbstractTableModel
 	public Object[][] arrayData2D;// = new Object[100][6];
 	public ArrayList<Creature> arrayList;
 	public Vector<Vector<Object>> vectorData2D;
-
+	private Simulator simModel;
 	public JComboBox<Object> tableCellCombo;
 
 	/*
@@ -50,45 +50,50 @@ public class TableModelForCreatureMap extends AbstractTableModel
 		{
 			for (int j = 0; j < 10; j++)
 			{
-				if (!(map[i][j]== null))
+				if (!(map[i][j] == null))
 				{
-					if (map[i][j].getType().toString().equals("Herbivore") || map[i][j].getType().toString().equals("Carnivore"))
+					if (map[i][j].getType().toString().equals("Herbivore")
+							|| map[i][j].getType().toString().equals("Carnivore"))
 					{
 						addRow(map[i][j]);
-					}
-					else
+					} else
 					{
-						System.out.println("array2DtoVector2D line 61:: Dead Creature");
+						// System.out.println("array2DtoVector2D line 61:: Dead
+						// Creature");
 					}
 				}
 			}
 		}
+
 	}
+
 	/**
-	 * This function is necessary to translate information between simulator class
-	 * and  table model. It changes table model into creature array[10][10] used for 
-	 * simulation
-	 * @param v vector of object vectors. 
+	 * This function is necessary to translate information between simulator
+	 * class and table model. It changes table model into creature array[10][10]
+	 * used for simulation
+	 * 
+	 * @param v
+	 *            vector of object vectors.
 	 */
 	public Creature[][] Vector2DtoCreatureMapArray2D(Vector<Vector<Object>> v)
 	{
-		Creature [][] cMap  = new Creature[10][10];
-		for(int i = 0; i < 10; i++)
-			for(int j = 0; j < 10; j++)
+		Creature[][] cMap = new Creature[10][10];
+		for (int i = 0; i < 10; i++)
+			for (int j = 0; j < 10; j++)
 				cMap[i][j] = new Creature();
-		
+
 		for (int i = 0; i < v.size(); i++)
 		{
-			Creature c = vectorToCreature(v.elementAt(i));			
-			cMap[c.getPositionX()][c.getPositionY()] = c;			
-		}			
-				
-			return cMap;
+			Creature c = vectorToCreature(v.elementAt(i));
+			cMap[c.getPositionX()][c.getPositionY()] = c;
+		}
+
+		return cMap;
 	}
 
 	public void deleteRow(int index)
 	{
-		if (index < vectorData2D.size())
+		if (index < vectorData2D.size() && index >= 0)
 			vectorData2D.remove(index);
 	}
 
@@ -107,10 +112,11 @@ public class TableModelForCreatureMap extends AbstractTableModel
 		vectorOfcreatureAtributes.add(c.getPositionY());
 		vectorData2D.add(vectorOfcreatureAtributes);
 	}
+
 	public Creature vectorToCreature(Vector<Object> v)
 	{
 		Creature c = new Creature();
-		
+
 		c.setType((String) v.elementAt(0));
 		c.setAge((int) v.elementAt(1));
 		c.setFitness((int) v.elementAt(2));
@@ -118,7 +124,7 @@ public class TableModelForCreatureMap extends AbstractTableModel
 		c.setPositionX((int) v.elementAt(4));
 		c.setPositionY((int) v.elementAt(5));
 		return c;
-		
+
 	}
 
 	public void dataFillerFromArray2D(Creature[][] map)
@@ -181,10 +187,10 @@ public class TableModelForCreatureMap extends AbstractTableModel
 		// return arrayData2D.length;
 		return vectorData2D.size();
 	}
+
 	public void replace(int index, Creature c)
 	{
-		
-		
+
 	}
 
 	public String getColumnName(int col)
@@ -194,7 +200,13 @@ public class TableModelForCreatureMap extends AbstractTableModel
 
 	public Object getValueAt(int row, int col)
 	{
-		return vectorData2D.elementAt(row).elementAt(col);
+		if (!(row >= 0 && col >= 0))
+		{
+			row = 0;
+			col = 0;
+		}
+
+			return vectorData2D.elementAt(row).elementAt(col);
 	}
 
 	public Class<? extends Object> getColumnClass(int c)
@@ -221,12 +233,14 @@ public class TableModelForCreatureMap extends AbstractTableModel
 		fireTableCellUpdated(row, col);
 	}
 
-	/*******************************************************************/
+	public void initModelSimulatorReference()
+	{
+		simModel = Simulator.getInstance();
+	}
 
-	/*
-	 * public void deleteRow(int rowIndex) { for(int rowIndex =
-	 * arrayData2D.size() - 1; rowIndex >= 0; rowIndex--) {
-	 * if(arrayData2D.get(rowIndex).isSelect()) { arrayData2D.remove(rowIndex);
-	 * } } fireTableDataChanged(); }
-	 */
+	public void transferDataToSimulator()
+	{
+		if (vectorData2D != null)
+			simModel.vectorDataBackup = vectorData2D;
+	}
 }
