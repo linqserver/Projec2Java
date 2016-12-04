@@ -45,8 +45,12 @@ public class RafaTable extends JPanel
 	private JLabel lblNewLabel_4;
 	private JLabel lblNewLabel_5;
 	private JLabel lblCreatureSimulator;
+	private JLabel lbl2CreatureSimulator;
 	private Simulator simRun;// = Simulator.getInstance();
 	private TableModelForCreatureMap model;
+	private JButton SAVE_Button;
+	private JButton READ_Button;
+	private JButton AUTO_Button;
 
 	/**
 	 * Create the panel.
@@ -182,10 +186,35 @@ public class RafaTable extends JPanel
 		lblNewLabel_5.setMinimumSize(new Dimension(200, 14));
 		panel_1.add(lblNewLabel_5);
 
-		lblCreatureSimulator = new JLabel("CREATURE SIMULATOR 9000");
+		lblCreatureSimulator = new JLabel("File Operations:");
 		lblCreatureSimulator.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblCreatureSimulator.setBounds(12, 339, 263, 14);
+		lblCreatureSimulator.setBounds(12, 339, 400, 14);
 		add(lblCreatureSimulator);
+
+		lbl2CreatureSimulator = new JLabel("Auto Populate Table:");
+		lbl2CreatureSimulator.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lbl2CreatureSimulator.setBounds(326, 339, 400, 14);
+		add(lbl2CreatureSimulator);
+
+		SAVE_Button = new JButton("SAVE");
+		SAVE_Button.setEnabled(true);
+		SAVE_Button.addActionListener(new FileSimulationButtonActionListener());
+		SAVE_Button.setBounds(12, 355, 100, 25);
+		add(SAVE_Button);
+
+		READ_Button = new JButton("READ");
+		READ_Button.setEnabled(true);
+		READ_Button.addActionListener(new FileSimulationButtonActionListener());
+		READ_Button.setBounds(120, 355, 100, 25);
+		add(READ_Button);
+
+		AUTO_Button = new JButton("AUTO");
+		AUTO_Button.setEnabled(true);
+		AUTO_Button.addActionListener(new FileSimulationButtonActionListener());
+		AUTO_Button.setBounds(325, 355, 130, 25);
+		AUTO_Button.setBackground(Color.CYAN);
+		add(AUTO_Button);
+
 	}
 
 	public void populateTextFieldsFromSelectedRow()
@@ -232,14 +261,15 @@ public class RafaTable extends JPanel
 	public Creature creatureFromTableRow()
 	{
 		Creature c = new Creature();
-		;
-		c.setType(table.getValueAt(table.getSelectedRow(), 0).toString());
-		c.setAge((int) table.getValueAt(table.getSelectedRow(), 1));
-		c.setFitness((int) table.getValueAt(table.getSelectedRow(), 2));
-		c.setGeneration((int) table.getValueAt(table.getSelectedRow(), 3));
-		c.setPositionX((int) table.getValueAt(table.getSelectedRow(), 4));
-		c.setPositionY((int) table.getValueAt(table.getSelectedRow(), 5));
-
+		if (table.getSelectedRow() >= 0)
+		{
+			c.setType(table.getValueAt(table.getSelectedRow(), 0).toString());
+			c.setAge((int) table.getValueAt(table.getSelectedRow(), 1));
+			c.setFitness((int) table.getValueAt(table.getSelectedRow(), 2));
+			c.setGeneration((int) table.getValueAt(table.getSelectedRow(), 3));
+			c.setPositionX((int) table.getValueAt(table.getSelectedRow(), 4));
+			c.setPositionY((int) table.getValueAt(table.getSelectedRow(), 5));
+		}
 		return c;
 
 	}
@@ -254,7 +284,7 @@ public class RafaTable extends JPanel
 				int row = table.getSelectedRow();
 				model.replace(row, creatureFromTableRow());
 				updateCreatureMapArray2D();
-				model.transferDataToSimulator();
+				//model.transferDataToSimulator();
 
 			} else
 				System.out.println("No rows selected");
@@ -271,16 +301,16 @@ public class RafaTable extends JPanel
 				steps = 1;
 
 			for (int i = 0; i < steps; i++)
-			{				
+			{
 				simRun.moveCreatures();
-				table.setModel(initModel(simRun.mapOfCreatures));				
-				
+				table.setModel(initModel(simRun.mapOfCreatures));
+
 			}
 			table.repaint();
-			
+
 			updateCreatureMapArray2D();
 			System.out.println("Run button Pressed");
-			model.transferDataToSimulator();
+			//model.transferDataToSimulator();
 		}
 	}
 
@@ -289,12 +319,12 @@ public class RafaTable extends JPanel
 		@SuppressWarnings("unused")
 		public void actionPerformed(ActionEvent e)
 		{
-			model.addRow(new Creature());			
+			model.addRow(new Creature());
 			scrollPane.getVerticalScrollBar().setValue(0);
 			scrollPane.repaint();
 			table.repaint();
 			updateCreatureMapArray2D();
-			model.transferDataToSimulator();
+			//model.transferDataToSimulator();
 		}
 	}
 
@@ -310,7 +340,7 @@ public class RafaTable extends JPanel
 			scrollPane.repaint();
 			table.repaint();
 			updateCreatureMapArray2D();
-			model.transferDataToSimulator();
+			//model.transferDataToSimulator();
 
 		}
 	}
@@ -320,9 +350,50 @@ public class RafaTable extends JPanel
 		public void valueChanged(ListSelectionEvent event)
 		{
 			populateTextFieldsFromSelectedRow();
-			model.transferDataToSimulator();
+			//model.transferDataToSimulator();
 		}
 
+	}
+
+	private class FileSimulationButtonActionListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			if (((JButton) e.getSource()).getText().equals("SAVE"))
+			{
+				// save button pressed
+				Serializer serSave = Serializer.getInstance();
+				serSave.saveToFile(model.vectorData2D);
+				updateCreatureMapArray2D();
+
+			} else if (((JButton) e.getSource()).getText().equals("READ"))
+			{
+				// read button pressed
+				Serializer serRead = Serializer.getInstance();
+				
+				table.setModel(initModel(serRead.Vector2DtoCreatureMapArray2D(serRead.readfromFile())));
+				// model.fireTableDataChanged();)
+				table.repaint();
+				scrollPane.repaint();
+				updateCreatureMapArray2D();
+
+			} 
+			else if (((JButton) e.getSource()).getText().equals("AUTO"))
+			{
+				// read button pressed
+				simRun.autoInitializeMap();
+				initModel(simRun.mapOfCreatures);
+				table.setModel(initModel(simRun.mapOfCreatures));
+				table.repaint();
+				scrollPane.repaint();
+				updateCreatureMapArray2D();
+
+			}else
+			{
+				System.out.println("File operation not recognised");
+			}
+
+		}
 	}
 
 	private class myTableModelListener implements TableModelListener
@@ -332,7 +403,7 @@ public class RafaTable extends JPanel
 			int row = table.getSelectedRow();
 			model.replace(row, creatureFromTableRow());
 			updateCreatureMapArray2D();
-			model.transferDataToSimulator();
+			//model.transferDataToSimulator();
 		}
 	};
 }

@@ -29,12 +29,20 @@ public class Simulator
 
 	public void initializeSimulator()
 	{
-		initializeMap();
+		readMapFromFile();
 		initializeFood();
 		System.out.println("Food and Creatures initialized");
 	}
+	public void readMapFromFile()
+	{
+		Serializer ser = Serializer.getInstance();
+		
+		vectorDataInputFile = ser.readfromFile();
+		mapOfCreatures = ser.Vector2DtoCreatureMapArray2D(vectorDataInputFile);
+		
+	}
 
-	public void initializeMap()
+	public void autoInitializeMap()
 	{
 		mapOfCreatures = new Creature[10][10];
 		for (int i = 0; i < 10; i++)

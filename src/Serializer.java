@@ -54,4 +54,33 @@ public class Serializer implements Serializable
 		}
 		return vectorData;
 	}
+	public Creature[][] Vector2DtoCreatureMapArray2D(Vector<Vector<Object>> v)
+	{
+		Creature[][] cMap = new Creature[10][10];
+		for (int i = 0; i < 10; i++)
+			for (int j = 0; j < 10; j++)
+				cMap[i][j] = new Creature();
+
+		for (int i = 0; i < v.size(); i++)
+		{
+			Creature c = vectorToCreature(v.elementAt(i));
+			cMap[c.getPositionX()][c.getPositionY()] = c;
+		}
+
+		return cMap;
+	}
+	public Creature vectorToCreature(Vector<Object> v)
+	{
+		Creature c = new Creature();
+
+		c.setType((String) v.elementAt(0));
+		c.setAge((int) v.elementAt(1));
+		c.setFitness((int) v.elementAt(2));
+		c.setGeneration((int) v.elementAt(3));
+		c.setPositionX((int) v.elementAt(4));
+		c.setPositionY((int) v.elementAt(5));
+		return c;
+
+	}
+
 }

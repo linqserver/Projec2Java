@@ -57,8 +57,8 @@ public class MainClass
 	{
 
 		JFrame frame = new JFrame("A00224300 Assignment 2");
-		frame.setResizable(false);
-		frame.setMinimumSize(new Dimension(500, 420));
+		frame.setResizable(true);
+		frame.setMinimumSize(new Dimension(500, 450));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		menuBar = new JMenuBar();
