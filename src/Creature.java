@@ -17,8 +17,15 @@ public class Creature
 	 * @param pPosition[2]
 	 *            array of integers of size 2
 	 */
-	public Creature(){};
-	@SuppressWarnings("null")
+	public Creature(){
+		setType("none");
+		setAge((Integer) 0);
+		setFitness((Integer) 0);
+		setGeneration((Integer) 0);
+		setPosition(new int[]{0,0});
+		moved = false;
+	};
+
 	public Creature(String pType, int pAge, int pFitness,int pGen, int[] pPosition)
 	{
 		try {
@@ -166,6 +173,10 @@ public class Creature
 	{
 		System.out.printf("Type: %s | Age: %d | Fitness: %d | Gen: %d | PosX: %d | PosY: %d\n ",
 							type,age,fitness,generation,position[0],position[1] );
+	}
+	public void upAge()
+	{
+		this.age++;
 	}
 	
 }

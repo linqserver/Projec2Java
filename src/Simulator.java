@@ -36,6 +36,7 @@ public class Simulator
 		for (int i = 0; i < 10; i++)
 			for (int j = 0; j < 10; j++)
 			{
+				mapOfCreatures[i][j] = new Creature();
 				int randomNum = 1 + (int) (Math.random() * ((100 - 1) + 1));
 				// limits number of creatures
 				if (randomNum > 66 && randomNum < 88)
@@ -50,7 +51,7 @@ public class Simulator
 				} else
 				{
 					int[] pos = { i, j };
-					mapOfCreatures[i][j] = new Creature("none", 0, 25, 0, pos);
+					mapOfCreatures[i][j] = new Creature();
 				}
 			}
 	}
@@ -89,7 +90,13 @@ public class Simulator
 			{				 
 				if (mapOfCreatures[i][j] != null)
 				{	 					
-					mapOfCreatures[i][j].setPosition(newPosition(mapOfCreatures[i][j].getPosition()));					
+					mapOfCreatures[i][j].setPosition(newPosition(mapOfCreatures[i][j].getPosition()));
+					mapOfCreatures[i][j].upAge();
+					int age = mapOfCreatures[i][j].getAge();
+					if(age > 35)
+					{
+						mapOfCreatures[i][j] = new Creature();
+					}
 				}
 			}
 		}

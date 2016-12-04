@@ -1,9 +1,32 @@
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+
+class menuItemActionListener implements ActionListener
+{
+
+	public void actionPerformed(ActionEvent e)
+	{
+		JMenuItem sce =(JMenuItem) e.getSource();
+		if (sce.getText() == "NEW")
+		{
+			Simulator sim = Simulator.getInstance();
+			sim.initializeSimulator();
+			JOptionPane.showMessageDialog(null, "New Simulation started\n PRESS RUN SIMULATION\nto continue","PRESS RUN SIMULATION " , JOptionPane.INFORMATION_MESSAGE);
+
+		} else
+		{
+			System.out.println("Menu item selected but source was not recognised");
+			System.out.println("Source: " );
+		}
+	}
+}
 
 public class MainClass
 {
@@ -30,8 +53,9 @@ public class MainClass
 
 		menuItemFile = new JMenu("File");
 		menuBar.add(menuItemFile);
-
+		
 		menuItemNew = new JMenuItem("NEW");
+		menuItemNew.addActionListener(new menuItemActionListener());
 		menuItemFile.add(menuItemNew);
 
 		menuItemStartSimulation = new JMenuItem("Start Simulation");
@@ -58,5 +82,6 @@ public class MainClass
 		frame.setVisible(true);
 
 	}
-
+	
+	
 }

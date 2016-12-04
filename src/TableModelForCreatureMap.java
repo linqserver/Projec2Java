@@ -52,9 +52,13 @@ public class TableModelForCreatureMap extends AbstractTableModel implements Seri
 			{
 				if (!(map[i][j]== null))
 				{
-					if (map[i][j].getType().equals("Herbivore") || map[i][j].getType().equals("Carnivore"))
+					if (map[i][j].getType().toString().equals("Herbivore") || map[i][j].getType().toString().equals("Carnivore"))
 					{
 						addRow(map[i][j]);
+					}
+					else
+					{
+						System.out.println("Dead Creature");
 					}
 				}
 			}

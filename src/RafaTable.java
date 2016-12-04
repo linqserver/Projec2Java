@@ -16,15 +16,11 @@ import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.text.TableView.TableRow;
 
 @SuppressWarnings("serial")
 public class RafaTable extends JPanel
 {
-	private boolean DEBUG = false;
-	/**
-	 * 
-	 */
-	// private static final long serialVersionUID = -6276714266834005086L;
 	private JTable table;
 
 	private JScrollPane scrollPane;
@@ -35,7 +31,8 @@ public class RafaTable extends JPanel
 	private JButton RUN_SIM_Button;
 	private JPanel panel_1;
 	private JComboBox<Object> typeComboBox;
-	private JTextField textField_position;
+	private JTextField textField_posX;
+	private JTextField textField_posY;
 	private JTextField textField_age;
 	private JTextField textField_generation;
 	private JTextField textField_fitness;
@@ -44,9 +41,11 @@ public class RafaTable extends JPanel
 	private JLabel lblNewLabel_2;
 	private JLabel lblNewLabel_3;
 	private JLabel lblNewLabel_4;
+	private JLabel lblNewLabel_5;
 	private JLabel lblCreatureSimulator;
-	private Simulator simRun;// = Simulator.getInstance();	
+	private Simulator simRun;// = Simulator.getInstance();
 	private TableModelForCreatureMap model;
+
 	/**
 	 * Create the panel.
 	 */
@@ -55,6 +54,7 @@ public class RafaTable extends JPanel
 
 		initialize(map);
 	}
+
 	public AbstractTableModel initModel(Creature[][] map)
 	{
 		model = new TableModelForCreatureMap();// )
@@ -64,16 +64,21 @@ public class RafaTable extends JPanel
 		return model;
 	}
 
+	public void updateCreatureMapArray2D()
+	{
+		simRun.mapOfCreatures = model.Vector2DtoCreatureMapArray2D(model.vectorData2D);
+	}
+
 	private void initialize(Creature[][] map)
 	{
 		simRun = Simulator.getInstance();
 		setLayout(null);
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(12, 13, 450, 209);
+		scrollPane.setBounds(12, 13, 470, 209);
 
 		table = new JTable();
 		table.setRowMargin(3);
-		table.setMaximumSize(new Dimension(500, 300));
+		table.setMaximumSize(new Dimension(600, 300));
 		table.setFillsViewportHeight(true);
 
 		table.setModel(initModel(map));
@@ -108,7 +113,7 @@ public class RafaTable extends JPanel
 		panel.add(RUN_SIM_Button);
 
 		panel_1 = new JPanel();
-		panel_1.setBounds(13, 234, 433, 50);
+		panel_1.setBounds(12, 234, 455, 50);
 		add(panel_1);
 		panel_1.setLayout(new GridLayout(2, 5, 2, -5));
 
@@ -129,16 +134,24 @@ public class RafaTable extends JPanel
 		textField_generation = new JTextField();
 
 		textField_generation.setText("0");
-		textField_generation.setEditable(false);
+		textField_generation.setEditable(true);
 		panel_1.add(textField_generation);
 		textField_generation.setColumns(10);
 
-		textField_position = new JTextField();
-		textField_position.setEditable(false);
+		textField_posX = new JTextField();
+		textField_posX.setEditable(true);
 
-		panel_1.add(textField_position);
-		textField_position.setColumns(10);
-		textField_position.setText("X0,Y0");
+		textField_posY = new JTextField();
+		textField_posY.setEditable(true);
+
+		panel_1.add(textField_posX);
+		textField_posX.setColumns(4);
+		textField_posX.setText("-");
+
+		panel_1.add(textField_posY);
+		textField_posY.setColumns(4);
+		textField_posY.setText("-");
+
 		lblNewLabel = new JLabel("Set Type");
 		panel_1.add(lblNewLabel);
 
@@ -151,8 +164,13 @@ public class RafaTable extends JPanel
 		lblNewLabel_3 = new JLabel("Generation");
 		panel_1.add(lblNewLabel_3);
 
-		lblNewLabel_4 = new JLabel("Position X,Y");
+		lblNewLabel_4 = new JLabel("Position X");
+		lblNewLabel_4.setMinimumSize(new Dimension(200, 14));
 		panel_1.add(lblNewLabel_4);
+
+		lblNewLabel_5 = new JLabel("Position Y");
+		lblNewLabel_5.setMinimumSize(new Dimension(200, 14));
+		panel_1.add(lblNewLabel_5);
 
 		lblCreatureSimulator = new JLabel("CREATURE SIMULATOR 9000");
 		lblCreatureSimulator.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -160,7 +178,61 @@ public class RafaTable extends JPanel
 		add(lblCreatureSimulator);
 	}
 
-	
+	public void populateTextFieldsFromSelectedRow()
+	{
+		Creature c = creatureFromTableRow();
+
+		if (c != null && !(c.getType().toString().equals("none")))
+			typeComboBox.setSelectedItem(c.getType().toString());
+		else
+			typeComboBox.setSelectedIndex(-1);
+
+		textField_age.setText(Integer.toString(c.getAge()));
+		textField_fitness.setText(Integer.toString(c.getFitness()));
+		textField_generation.setText(Integer.toString(c.getGeneration()));
+		textField_posX.setText(Integer.toString(c.getPositionX()));
+		textField_posY.setText(Integer.toString(c.getPositionY()));
+	}
+
+	public Creature creatureFromTextFields()
+	{
+		Creature c = new Creature();
+
+		c.setType(typeComboBox.getSelectedItem().toString());
+		c.setAge(Integer.parseInt(textField_age.getText()));
+		c.setFitness(Integer.parseInt(textField_fitness.getText()));
+		c.setGeneration(Integer.parseInt(textField_generation.getText()));
+		c.setPositionX(Integer.parseInt(textField_posX.getText()));
+		c.setPositionY(Integer.parseInt(textField_posY.getText()));
+		return c;
+	}
+
+	public void populateSelectedRowFromCreature(Creature c)
+	{
+		int row = table.getSelectedRow();
+
+		table.getModel().setValueAt(c.getType().toString(), row, 0);
+		table.getModel().setValueAt(c.getAge(), row, 1);
+		table.getModel().setValueAt(c.getFitness(), row, 2);
+		table.getModel().setValueAt(c.getGeneration(), row, 3);
+		table.getModel().setValueAt(c.getPositionX(), row, 4);
+		table.getModel().setValueAt(c.getPositionY(), row, 5);
+	}
+
+	public Creature creatureFromTableRow()
+	{
+		Creature c = new Creature();
+		;
+		c.setType(table.getValueAt(table.getSelectedRow(), 0).toString());
+		c.setAge((int) table.getValueAt(table.getSelectedRow(), 1));
+		c.setFitness((int) table.getValueAt(table.getSelectedRow(), 2));
+		c.setGeneration((int) table.getValueAt(table.getSelectedRow(), 3));
+		c.setPositionX((int) table.getValueAt(table.getSelectedRow(), 4));
+		c.setPositionY((int) table.getValueAt(table.getSelectedRow(), 5));
+
+		return c;
+
+	}
 
 	private class UPDATEButtonActionListener implements ActionListener
 	{
@@ -168,21 +240,8 @@ public class RafaTable extends JPanel
 		{
 			if (table.getSelectedRow() > -1)
 			{
-				String type = typeComboBox.getModel().getSelectedItem().toString();
-				int age = Integer.parseInt(textField_age.getText());
-				int fit = Integer.parseInt(textField_fitness.getText());
+				populateSelectedRowFromCreature(creatureFromTextFields());
 
-				int row = table.getSelectedRow();
-				table.getModel().setValueAt(type, row, 0);
-				table.getModel().setValueAt(age, row, 1);
-				table.getModel().setValueAt(fit, row, 2);
-				textField_generation.setText(table.getModel().getValueAt(row, 3).toString());
-				String pos = "";
-				pos +=  table.getModel().getValueAt(row, 4).toString();
-				pos += ", ";
-				pos +=  table.getModel().getValueAt(row, 5).toString();
-				textField_position.setText(pos);
-				
 			} else
 				System.out.println("No rows selected");
 
@@ -192,13 +251,14 @@ public class RafaTable extends JPanel
 	private class RunSimulationButtonActionListener implements ActionListener
 	{
 		public void actionPerformed(ActionEvent e)
-		{					
-			//simRun.moveCreatures();		
+		{
+			// simRun.moveCreatures();
 			simRun.moveCreatures();
 			table.setModel(initModel(simRun.mapOfCreatures));
 			model.fireTableDataChanged();
 			table.repaint();
-			
+			updateCreatureMapArray2D();
+
 			System.out.println("Run button Pressed");
 		}
 	}
@@ -213,8 +273,10 @@ public class RafaTable extends JPanel
 			scrollPane.getVerticalScrollBar().setValue(0);
 			scrollPane.repaint();
 			table.repaint();
+			updateCreatureMapArray2D();
 		}
 	}
+
 	private class DeleteSimulationButtonActionListener implements ActionListener
 	{
 		@SuppressWarnings("unused")
@@ -222,11 +284,12 @@ public class RafaTable extends JPanel
 		{
 			scrollPane.getVerticalScrollBar().setValue(0);
 			model.deleteRow(table.getSelectedRow());
-			//model.fireTableDataChanged();
-			
+			// model.fireTableDataChanged();
+
 			scrollPane.repaint();
 			table.repaint();
-			
+			updateCreatureMapArray2D();
+
 		}
 	}
 
@@ -234,23 +297,7 @@ public class RafaTable extends JPanel
 	{
 		public void valueChanged(ListSelectionEvent event)
 		{
-			
-			Object s = table.getValueAt(table.getSelectedRow(), 0);
-			if(s != null)
-			typeComboBox.setSelectedItem(table.getValueAt(table.getSelectedRow(), 0).toString());
-			else
-				typeComboBox.setSelectedIndex(-1);
-				
-			int row = table.getSelectedRow();
-			String pos = "";
-			pos +=  table.getModel().getValueAt(row, 4).toString();
-			pos += ", ";
-			pos +=  table.getModel().getValueAt(row, 5).toString();
-			textField_position.setText(pos);
-			textField_age.setText(table.getValueAt(table.getSelectedRow(), 1).toString());
-			textField_generation.setText(table.getValueAt(table.getSelectedRow(), 3).toString());
-			textField_fitness.setText(table.getValueAt(table.getSelectedRow(), 2).toString());
-
+			populateTextFieldsFromSelectedRow();
 		}
 
 	}
